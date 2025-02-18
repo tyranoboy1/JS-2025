@@ -88,3 +88,122 @@ bar(); // ?
 > 
 > * ***함수 정의(함수 선언문 또는 함수 표현식)가 실행되어 생성된 함수 객체는 이렇게 결정된 상위 스코프를 기억한다.***
 >   * 함수가 호출될 때마다 함수의 상위 스코프를 참조할 필요가 있기 때문에
+
+
+## 지역 변수
+```javascript
+function foo() {
+    var x = 'local';
+    console.log(x); // local
+    return x;
+}
+
+foo();
+console.log(x); // ReferenceError: x is not defined
+```
+
+> * 지역 변수의 생명 주기는 함수의 생명 주기와 일치
+> * 전역 변수의 생명 주기는 전역 객체의 생명 주기와 일치
+
+
+## 호이스팅
+
+```javascript
+var x = 'global';
+
+function foo() {
+    console.log(x); // ①
+    var x = 'local';
+}
+
+foo();
+console.log(x); // global
+```
+
+> * 스코프를 단위로 동작
+> * 변수 선언이 스코프의 선두로 끌어 올려진 것처럼 동작하는 자바스크립트 고유 특징
+
+
+## 전역 변수 문제점
+
+> * 모든 코드가 전역 변수를 참조하고 변경할 수 있는 암묵적 결합을 허용
+> * 생명 주기가 길어 메모리 리소스 낭비
+> * 스코프 체인 상 종점에 위치 => 검색 속도가 가장 느리다.
+> * 파일이 분리되어도 하나의 전역 스코프를 공유하는 => 네임 스페이스 오염
+
+
+## 전역 변수 억제
+
+> * 변수의 스코프는 좁을수록 좋다 => 지역 변수 사용
+> * 모든 코드를 즉시 실행 함수로 감싸면 모든 변수는 즉시 실행 함수의 지역 변수
+> * 네임 스페이스 객체 => 담당할 객체를 생성하고 전역 변수로 사용하고 싶은 요소를 프로퍼티로 추가
+
+
+
+## let, const
+
+
+> * 이름이 같은 변수의 중복 선언 불가능
+> * 모든 코드 블록을 지역 스코프로 인정하는 블록 레벨 스코프를 따른다.
+
+### let
+```javascript
+let foo = 1; // 전역 변수
+
+{
+    let foo = 2; // 지역 변수
+    let bar = 3; // 지역 변수
+}
+
+console.log(foo); // 1
+console.log(bar); // ReferenceError: bar is not defined
+```
+
+> * ***let 변수는 선언단계와 초기화 단계가 분리되어 진행된다.***
+> * ***스코프의 시작 지점부터 초기화 시작 지점까지 변수를 참조할 수 없는 구간을 TDZ라고 부른다***
+> * ***모든 선언은 호이스팅을 하고 let도 호이스팅을 하지만 발생하지 않는 것처럼 동작한다.***
+
+```javascript
+let foo = 1; // 전역 변수
+
+{
+    console.log(foo); // ReferenceError: Cannot access 'foo' before initialization
+    let foo = 2; // 지역 변수
+}
+```
+
+### const
+ 
+ ```javascript
+{
+    // 변수 호이스팅이 발생하지 않는 것처럼 동작한다
+    console.log(foo); // ReferenceError: Cannot access 'foo' before initialization
+    const foo = 1;
+    console.log(foo); // 1
+}
+
+// 블록 레벨 스코프를 갖는다.
+console.log(foo); // ReferenceError: foo is not defined
+```
+
+ ```javascript
+// 재할당 금지
+const foo = 1;
+foo = 2; // TypeError: Assignment to constant variable.
+
+
+// 재할당 금지 => 불변을 의미하는 것은 X
+const person = {
+    name: 'Lee'
+};
+
+// 객체는 변경 가능한 값이다. 따라서 재할당없이 변경이 가능하다.
+person.name = 'Kim';
+
+console.log(person); // {name: "Kim"}
+```
+> * ***반드시 선언과 동시에 초기화해야된다.***
+> * ***모든 선언은 호이스팅을 하고 const도 호이스팅을 하지만 발생하지 않는 것처럼 동작한다.***
+> * ***재할당이 금지된 상수***
+> * ***const 변수에 원시값을 할당한 경우 값을 변경할 수 없다***
+>   * 하지만 객체를 할당한 경우 값을 변경할 수 있다.
