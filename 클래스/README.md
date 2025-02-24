@@ -199,5 +199,122 @@ console.log(me); // Person {name: "Lee", getName: ƒ}
 console.log(me.getName()); // Lee
 ```
 
+### 상속에 의한 클래스 확장
+
+> * 상속에 의한 클래스 확장은 기존 클래스를 상속받아 새로운 클래스를 확장하여 정의하는 것
+
+```javascript
+class Animal {
+    constructor(age, weight) {
+        this.age = age;
+        this.weight = weight;
+    }
+
+    eat() { return 'eat'; }
+
+    move() { return 'move'; }
+}
+
+// 상속을 통해 Animal 클래스를 확장한 Bird 클래스
+class Bird extends Animal {
+    fly() { return 'fly'; }
+}
+
+const bird = new Bird(1, 5);
+
+console.log(bird); // Bird {age: 1, weight: 5}
+console.log(bird instanceof Bird); // true
+console.log(bird instanceof Animal); // true
+
+console.log(bird.eat());  // eat
+console.log(bird.move()); // move
+console.log(bird.fly());  // fly
+```
+
+### 동적 상속
+```javascript
+// 생성자 함수
+function Base(a) {
+    this.a = a;
+}
+
+// 생성자 함수를 상속받는 서브클래스
+class Derived extends Base {}
+
+const derived = new Derived(1);
+console.log(derived); // Derived {a: 1}
+```
+
+### super 키워드
+
+>* super를 호출하면 수퍼클래스의 constructor를 호출한다
+
+```javascript
+// 수퍼클래스
+class Base {
+    constructor(a, b) { // ④
+        this.a = a;
+        this.b = b;
+    }
+}
+
+// 서브클래스
+class Derived extends Base {
+    constructor(a, b, c) { // ②
+        super(a, b); // ③
+        this.c = c;
+    }
+}
+
+const derived = new Derived(1, 2, 3); // ①
+console.log(derived); // Derived {a: 1, b: 2, c: 3}
+```
+
+>* 메서드 내에서 super를 참조하면 수퍼클래스의 메서드를 호출할 수 있다.
+
+### 상속 클래스의 인스턴스 생성 과정
+
+#### 서브 클래스 super 호출
+
+>* ***서브 클래스는 자신이 직접 인스턴스를 생성하지 않고 수퍼클래스에게 인스턴스 생성을 위임한다.***
+>  * 서브 클래스의 constructor에서 반드시 super를 호출해야 하는 이유
+
+#### 슈퍼클래스의 인스턴스 생성과 this 바인딩
+
+```javascript
+// 수퍼클래스
+class Rectangle {
+    constructor(width, height) {
+        // 암묵적으로 빈 객체, 즉 인스턴스가 생성되고 this에 바인딩된다.
+        console.log(this); // ColorRectangle {}
+        // new 연산자와 함께 호출된 함수, 즉 new.target은 ColorRectangle이다.
+        console.log(new.target); // ColorRectangle
+    ...
+```
+> * 인스턴스는 new.target이 가리키는 서브클래스가 생성한 것으로 처리 된다.
+
+#### 수퍼클래스의 인스턴스 초기화
 
 
+#### 서브 클래스 constructor로의 복귀와 this 바인딩
+
+>* super가 반환한 인스턴스가 this에 바인딩된다. 서브클래스는 별도의 인스턴스를 생성하지 않고 super가 반환한 인스턴스를 this에 바인딩하여 그대로 사용
+
+```javascript
+// 서브클래스
+class ColorRectangle extends Rectangle {
+    constructor(width, height, color) {
+        super(width, height);
+
+        // super가 반환한 인스턴스가 this에 바인딩된다.
+        console.log(this); // ColorRectangle {width: 2, height: 4}
+    ...
+```
+
+> * super가 호출되지 않으면 인스턴스가 생성되지 않으며, this 바인딩도 할 수 없다.
+> * 서브 클래스의 constructor에서 super를 호출하기 전까지 this를 참조할 수 없는 이유
+>
+
+ #### 서브클래스의 인스턴스 초기화
+
+ #### 인스턴스 반환
